@@ -1,7 +1,8 @@
 //set up all required module variables
 require("dotenv").config();
 var keys = require("./keys.js");
-// var spotify = new Spotify(keys.spotify);
+var Spotify = require("node-spotify-api");
+var spotify = new Spotify(keys.spotify);
 var axios = require("axios");
 var moment = require("moment");
 
@@ -52,27 +53,20 @@ function concertThis() {
     });
 }
 
-// //create spotify function
-// function spotifyThis() {
-//     spotify
-//         .search({type: "track", query: input})
-//         .then(function(response) {
-//             console.log("----------------");
-//             //log artist name
-//             console.log("Artist Name: " + response.data[0].artists);
-//             //log song name
-//             console.log("Song Name: " + response.data[0].name);
-//             //log preview link to song from Spotify
-//             console.log("Song Link: " + response.data[0].preview_url);
-//             //log album that song is from
-//             console.log("Album Name: " + response.data[0].album);
-                //console.log("----------------");
-
-//         })  
-//         .catch(function(error) {
-//             console.log(err);
-//         })
-// }
+//create spotify function
+function spotifyThis() {
+    spotify.search({type: "track", query: input, limit: 1}, function(err, data) {
+        if (err) {
+            return console.log("An error occurred: " + err);
+          }
+          console.log("----------------");
+          console.log("Artist Name: " + data.tracks.items[0].artists[0].name);
+          console.log("Song Name: " + data.tracks.items[0].name);
+          console.log("Song Link: " + data.tracks.items[0].preview_url);
+          console.log("Album Name: " + data.tracks.items[0].album.name);
+          console.log("----------------");
+    })  
+}
 
 //create movie function
 function movieThis() {
