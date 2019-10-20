@@ -1,6 +1,7 @@
 //set up all required module variables
 require("dotenv").config();
 var keys = require("./keys.js");
+// var spotify = new Spotify(keys.spotify);
 var axios = require("axios");
 var moment = require("moment");
 
@@ -9,7 +10,7 @@ var command = process.argv[2];
 var input = process.argv.slice(3).join("+");
 
 //function that designates which function should be run based on the command arguement the user puts in
-var pick = function(caseData, functionData) {
+var pick = function (caseData, functionData) {
     switch (caseData) {
         case "concert-this":
             concertThis(functionData);
@@ -29,7 +30,7 @@ var pick = function(caseData, functionData) {
 };
 
 //create function that takes in the command line arguememnt
-var runLiri = function(command, input) {
+var runLiri = function (command, input) {
     pick(command, input);
 }
 
@@ -39,25 +40,58 @@ runLiri(command, input);
 //create the concertThis function
 function concertThis() {
     var concertQueryUrl = "https://rest.bandsintown.com/artists/" + input + "/events?app_id=codingbootcamp";
-    axios.get(concertQueryUrl).then(function(response) {
+    axios.get(concertQueryUrl).then(function (response) {
         console.log("----------------");
         //log name of venue
         console.log("Venue Name: " + response.data[0].venue.name);
         //log venue location
-        console.log("Venue Location: " + response.data[0].venue.city + ", " + response.data[0].venue.region);
+        console.log("Venue Location: " + response.data[0].venue.city + ", " + response.data[0].venue.region + ", " + response.data[0].venue.country);
         //log date of event
-        console.log("Event Date: " + moment(response.data[0].datetime).format("MMM Do YY"));
+        console.log("Event Date: " + moment(response.data[0].datetime).format("MM/DD/YYYY"));
+        console.log("----------------");
     });
 }
 
 // //create spotify function
 // function spotifyThis() {
-//     var spotify = new Spotify(keys.spotify);
-//     spotify.search({type: "track", query: input, })
+//     spotify
+//         .search({type: "track", query: input})
+//         .then(function(response) {
+//             console.log("----------------");
+//             //log artist name
+//             console.log("Artist Name: " + response.data[0].artists);
+//             //log song name
+//             console.log("Song Name: " + response.data[0].name);
+//             //log preview link to song from Spotify
+//             console.log("Song Link: " + response.data[0].preview_url);
+//             //log album that song is from
+//             console.log("Album Name: " + response.data[0].album);
+                //console.log("----------------");
+
+//         })  
+//         .catch(function(error) {
+//             console.log(err);
+//         })
 // }
 
-// //create movie function
-// function movieThis() {
-//     var omdbKey = e8c79df7;
-//     var movieQueryUrl = "http://www.omdbapi.com/?t=" + input + "&y=&plot=short&apikey=" + omdbKey;
-// }
+//create movie function
+function movieThis() {
+    var omdbKey = "e8c79df7";
+    if (input === false) {
+        input = "mr+nobody";
+    }
+    var movieQueryUrl = "http://www.omdbapi.com/?t=" + input + "&y=&plot=short&apikey=" + omdbKey;
+    axios.get(movieQueryUrl).then(function(response) {
+        console.log("----------------");
+        console.log(response.data);
+        console.log("----------------");
+        console.log("Movie Title: " + response.data[0].title);
+        // console.log("Year: " + response.data[0].year);
+        // console.log("IMDB Rating: " + response.data[0].ratings.value[0]);
+        // console.log("Rotten Tomatoes Rating: " + response.data[0].ratings.value[1]);
+        // console.log("Produced in: " + response.data[0].country);
+        // console.log("Language: " + response.data[0].language);
+        // console.log("Plot: " + response.data[0].plot);
+        // console.log("Actors: " + response.data[0].actors);
+    })
+}
