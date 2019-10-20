@@ -5,6 +5,7 @@ var Spotify = require("node-spotify-api");
 var spotify = new Spotify(keys.spotify);
 var axios = require("axios");
 var moment = require("moment");
+var fs = require("fs");
 
 //set up global command line input variables
 var command = process.argv[2];
@@ -26,7 +27,7 @@ var pick = function (caseData, functionData) {
             doWhat(functionData);
             break;
         default:
-            console.log("Sorry, LIRI doesn't know that.");
+            console.log("Sorry, LIRI doesn't know that command.");
     }
 };
 
@@ -53,7 +54,7 @@ function concertThis() {
     });
 }
 
-//create spotify function
+//create spotifyThis function
 function spotifyThis() {
     spotify.search({type: "track", query: input, limit: 1}, function(err, data) {
         if (err) {
@@ -68,24 +69,38 @@ function spotifyThis() {
     })  
 }
 
-//create movie function
+//create movieThis function
 function movieThis() {
     var omdbKey = "e8c79df7";
-    if (input === false) {
+    if (input == false) {
         input = "mr+nobody";
     }
     var movieQueryUrl = "http://www.omdbapi.com/?t=" + input + "&y=&plot=short&apikey=" + omdbKey;
     axios.get(movieQueryUrl).then(function(response) {
         console.log("----------------");
-        console.log(response.data);
+        console.log(movieQueryUrl);
         console.log("----------------");
-        console.log("Movie Title: " + response.data[0].title);
-        // console.log("Year: " + response.data[0].year);
-        // console.log("IMDB Rating: " + response.data[0].ratings.value[0]);
-        // console.log("Rotten Tomatoes Rating: " + response.data[0].ratings.value[1]);
-        // console.log("Produced in: " + response.data[0].country);
-        // console.log("Language: " + response.data[0].language);
-        // console.log("Plot: " + response.data[0].plot);
-        // console.log("Actors: " + response.data[0].actors);
+        console.log("Movie Title: " + response.data.Title);
+        console.log("Year: " + response.data.Year);
+        console.log("IMDB Rating: " + response.data.Ratings[0].Value);
+        console.log("Rotten Tomatoes Rating: " + response.data.Ratings[1].Value);
+        console.log("Produced in: " + response.data.Country);
+        console.log("Language(s): " + response.data.Language);
+        console.log("Plot: " + response.data.Plot);
+        console.log("Actors: " + response.data.Actors);
+        console.log("----------------");
     })
+}
+
+//create the doWhat function
+function doWhat() {
+    fs.readFile ("random.txt", "utf8", function(error, data) {
+        if (error) {
+          return console.log(error);
+        }
+        var whatToDoArray = (data.split(","));
+        command = whatToDoArray[0];
+        input = whatToDoArray[1];
+        runLiri(command, input);
+    });
 }
